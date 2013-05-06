@@ -1,6 +1,9 @@
 #!/bin/bash
 echo "Configurar servicio LDAP:"
 
+# CONTRASEÑA: 123
+
+
 # Ejemplos estructura LDAP
 #dn: cn=John Smith, ou=st, o=um, c=es		# Añade el cn en la ruta ou+o+c
 #changetype: add				# Esto indica que la operacion es add
@@ -23,10 +26,12 @@ echo "Configurar servicio LDAP:"
 # Habilitar base de datos tipo bdb
 ldapmodify -Y EXTERNAL -H ldapi:/// -f archivo/loadDBD.ldif
 
-# Creamos otro schema
 # Importamos primero una clase que vamos a usar
 ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/cosine.ldif
 ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/inetorgperson.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/core.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/nis.ldif
+
 # cremos la nueva
 ldapadd -Y EXTERNAL -H ldapi:/// -f archivo/stSchema.ldif
 

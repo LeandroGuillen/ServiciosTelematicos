@@ -8,10 +8,16 @@ echo "Instalando los paquetes necesarios..."
 # rm -r /var/lib/ldap
 
 # INSTALACIONES
-apt-get update -qq &&\
-# apt-get install -qq wireshark dhcp3-server bind9 patch maildrop slapd ldap-utils apache2 php5 libapache2-mod-php5 openssh-server vsftpd telnetd
 
-apt-get install wireshark isc-dhcp-server openssh-server vim bind9
+# Limpiar LDAP
+apt-get purge slapd ldap-utils
+rm -r /var/lib/ldap
+
+# Actualizar...
+apt-get update -qq &&\
+# apt-get install -qq  patch maildrop apache2 php5 libapache2-mod-php5 openssh-server vsftpd telnetd
+# ... e instalar
+apt-get install wireshark isc-dhcp-server openssh-server vim bind9 slapd ldap-utils exim4 dovecot-pop3d
 
 # ~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v
 # ~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v	PARA STA

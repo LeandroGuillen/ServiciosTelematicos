@@ -64,7 +64,7 @@ read -p "Ejecute el script del cliente ahora. Pulse ENTER para continuar..."
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Preparar servidor LDAP
-# ./ldap
+./ldap
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Preparar servidor HTTP

@@ -1,43 +1,14 @@
 #!/bin/bash
 
-dir=$(pwd)
+# Modificar archivos de configuracion pertinentes de Dovecot
+echo -e "disable_plaintext_auth=no\nauth_mechanisms=plain\n!includeauth-system.conf.ext" > /etc/dovecot/conf.d/10-auth.conf
+echo -e "mail_location=maildir:~/Maildir" > /etc/dovecot/conf.d/10-mail.conf
 
-echo "Descargar checkpassword"
-cd /usr/local/src
-wget http://cr.yp.to/checkpwd/checkpassword-0.90.tar.gz
-gunzip checkpassword-0.90.tar
-tar -xf checkpassword-0.90.tar
-cd checkpassword-0.90
-patch < /usr/local/src/netqmail-1.06/other-patches/checkpassword-0.90.errno.patch
-make
-make setup check
+# Crear cuentas en el SO
+useradd usuario1 -m
+useradd usuario2 -m
+passwd usuario1
+passwd usuario2
 
-echo "Crear carpeta pop3d"
-mkdir /var/qmail/supervise/qmail-pop3d
-
-echo "Crear archivo run"
-touch /var/qmail/supervise/qmail-pop3d/run
-wget http://libra.inf.um.es/staff/gabilm/ST/var/qmail/supervise/qmail-pop3d/run
-cp ./run /var/qmail/supervise/qmail-pop3d
-rm run
-
-echo "Crear archivo log"
-mkdir /var/qmail/supervise/qmail-pop3d/log
-touch /var/qmail/supervise/qmail-pop3d/log/run
-wget http://libra.inf.um.es/staff/gabilm/ST/var/qmail/supervise/qmail-pop3d/log/run
-cp ./run /var/qmail/supervise/qmail-pop3d/log
-rm run
-
-echo "Dar permisos"
-chmod +t /var/qmail/supervise/qmail-pop3d # if daemontools < 0.75
-mkdir /var/log/qmail/pop3d
-chown qmaill /var/log/qmail/pop3d
-chmod 755 /var/qmail/supervise/qmail-pop3d/run
-chmod 755 /var/qmail/supervise/qmail-pop3d/log/run
-ln -s /var/qmail/supervise/qmail-pop3d /service
-
-echo "Cambiar qmailctl"
-cp $dir/archivo/qmailctl /var/qmail/bin/qmailctl
-
-echo "Reiniciar qmail"
-qmailctl restart
+# Reiniciar el servicio
+service dovecot restart

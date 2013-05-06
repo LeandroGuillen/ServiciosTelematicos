@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# ./dhcp $subred $mascara $subdominio $MACcliente $ipservidor $ipcliente $interfaz
+
+echo "Configurar servicio DHCP:"
+
+# Leyendo parametros
+subred=$1 # no incluye el .0 final
+mascara=$2
+domainname=$3 # dominio
+ipservidor=$4
+interfaz=$5 # interfaz (interna) con ip=10.0.0.1
+ipcliente=$6
+MACcliente=$7
+ipcliente2=$8 # para el segundo cliente
+MACcliente2=$9
+
+# datos:dhcp
+dhcp_inicial="$subred.20";
+dhcp_final="$subred.36";
+defaultleasetime="600";
+maxleasetime="7200";
+defaultrouter="$subred.1";
+dns1=$ipservidor;
+# dns2=$ipservidor;
+
+echo -e "\t- Configurando fichero /etc/dhcp3/dhcpd.conf"
+configfile=\
+"subnet ${subred}.0 netmask $mascara {\n
+\trange $dhcp_inicial $dhcp_final;\n
+\tdefault-lease-time $defaultleasetime;\n
+\tmax-lease-time $maxleasetime;\n
+\toption subnet-mask $mascara;\n
+\toption broadcast-address ${subred}.255;\n
+\toption routers $defaultrouter;\n
+\toption domain-name-servers $dns1;\n
+\toption domain-name \"$domainname\";\n
+}\n\n
+get-lease-hostnames true;\n
+host cliente {\n
+\thardware ethernet $MACcliente;\n
+\tfixed-address $ipcliente;\n
+}\n\n
+host cliente2 {\n
+\thardware ethernet $MACcliente2;\n
+\tfixed-address $ipcliente2;\n
+}\n";
+
+# La opcion -e es para que imprima los \t y \n correctamente
+echo -e $configfile > /etc/dhcp/dhcpd.conf
+
+sleep 1
+
+echo -e "\t- Iniciar servidor DHCP"
+killall dhcpd
+
+sleep 1
+# Ejecutar el servidor
+/usr/sbin/dhcpd $interfaz
+

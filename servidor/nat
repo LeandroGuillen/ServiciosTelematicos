@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "Habilitar funciones de enrutador:"
+
+echo -e "\t- Habilitar forwarding"
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+echo -e "\t- Modificar iptables, habilitar NAT"
+publica=$1 # interfaz_exterior
+privada=$2 # interfaz
+
+iptables -F
+iptables -t nat -F
+iptables --delete-chain
+iptables -t nat --delete-chain
+iptables -t nat --append POSTROUTING --out-interface $publica -j MASQUERADE
+iptables --append FORWARD --in-interface $privada -j ACCEPT
+
+# Habilitar IPv6 forwarding
+# sysctl -w net.ipv6.conf.all.forwarding=1

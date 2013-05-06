@@ -1,0 +1,174 @@
+#!/bin/bash
+
+subdominio=$1
+
+# Guarda el directorio original
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# INSTALACION DE SMTP
+# ----------------------------------------------------- PASO 1
+echo "Desempaquetar e instalar"
+wget http://www.qmail.org/netqmail-1.06.tar.gz
+wget http://cr.yp.to/ucspi-tcp/ucspi-tcp-0.88.tar.gz
+wget http://cr.yp.to/daemontools/daemontools-0.76.tar.gz
+
+echo "Instalando los programas."
+umask 022
+mkdir -p /usr/local/src
+mv netqmail-1.06.tar.gz ucspi-tcp-0.88.tar.gz /usr/local/src
+mkdir -p /package
+mv daemontools-0.76.tar.gz /package
+chmod 1755 /package
+cd /usr/local/src
+gunzip netqmail-1.06.tar.gz
+tar xpf netqmail-1.06.tar
+gunzip ucspi-tcp-0.88.tar.gz
+tar xpf ucspi-tcp-0.88.tar
+rm *.tar
+cd /package
+gunzip daemontools-0.76.tar.gz
+tar xpf daemontools-0.76.tar
+rm *.tar
+# ----------------------------------------------------- PASO 2
+# Directorio principal de qmail
+mkdir -p /var/qmail
+# cd /usr/local/src/netqmail-1.06
+# cp ${DIR}/archivos/IDS .
+# chmod 700 IDS
+# ./IDS
+echo "Creando usuarios de qmail."
+groupadd nofiles
+useradd -g nofiles -d /var/qmail/alias alias
+useradd -g nofiles -d /var/qmail qmaild
+useradd -g nofiles -d /var/qmail qmaill
+useradd -g nofiles -d /var/qmail qmailp
+groupadd qmail
+useradd -g qmail -d /var/qmail qmailq
+useradd -g qmail -d /var/qmail qmailr
+useradd -g qmail -d /var/qmail qmails
+# ----------------------------------------------------- PASO 3
+echo "Compilar netqmail"
+cd /usr/local/src/netqmail-1.06
+make setup check
+./config-fast smtp.st.um # (ojo, debe poder resolverse: /etc/hosts)
+
+echo "Compilar ucspi-tcp"
+cd /usr/local/src/ucspi-tcp-0.88
+patch < /usr/local/src/netqmail-1.06/other-patches/ucspi-tcp-0.88.errno.patch
+make
+make setup check
+
+echo "Compilar daemontools"
+cd /package/admin/daemontools-0.76
+cd src
+patch < /usr/local/src/netqmail-1.06/other-patches/daemontools-0.76.errno.patch
+cd ..
+package/install
+# ----------------------------------------------------- PASO 4
+echo "Crear fichero /var/qmail/rc"
+cd /var/qmail
+wget http://libra.inf.um.es/staff/gabilm/ST/var/qmail/rc
+chmod 755 /var/qmail/rc
+
+echo "Crear directorio de logs"
+mkdir -p /var/log/qmail
+
+echo "Elige el metodo de entrega"
+echo ./Maildir/ >/var/qmail/control/defaultdelivery
+# ----------------------------------------------------- PASO 5
+echo "Instalar script de inicio en /var/qmail/bin/qmailctl"
+cd /var/qmail/bin/
+wget http://libra.inf.um.es/staff/gabilm/ST/var/qmail/bin/qmailctl
+chmod 755 /var/qmail/bin/qmailctl
+ln -s /var/qmail/bin/qmailctl /usr/bin
+
+echo "Instalar scripts de supervision"
+mkdir -p /var/qmail/supervise/qmail-send/
+echo -e "#!/bin/sh\nexec /var/qmail/rc" > /var/qmail/supervise/qmail-send/run
+mkdir -p /var/qmail/supervise/qmail-send/log/
+echo -e "#!/bin/sh\nexec /usr/local/bin/setuidgid qmaill /usr/local/bin/multilog t /var/log/qmail" > /var/qmail/supervise/qmail-send/log/run
+# ----------------------------------------------------- PASO 6
+# Instalar scripts de supervision (continuado)
+mkdir -p /var/qmail/supervise/qmail-smtpd/
+wget http://libra.inf.um.es/staff/gabilm/ST/var/qmail/supervise/qmail-smtpd/run
+mv run /var/qmail/supervise/qmail-smtpd/
+# ----------------------------------------------------- PASO 7
+# Instalar scripts de supervision (continuado)
+mkdir -p /var/qmail/supervise/qmail-smtpd/log
+wget http://libra.inf.um.es/staff/gabilm/ST/var/qmail/supervise/qmail-smtpd/run
+mv run /var/qmail/supervise/qmail-smtpd/log
+
+echo "Establecer permisos"
+chmod 755 /var/qmail/supervise/qmail-send/run
+chmod 755 /var/qmail/supervise/qmail-send/log/run
+chmod 755 /var/qmail/supervise/qmail-smtpd/run
+chmod 755 /var/qmail/supervise/qmail-smtpd/log/run
+ln -s /var/qmail/supervise/qmail-send /var/qmail/supervise/qmail-smtpd /service
+# ----------------------------------------------------- PASO 8
+echo "Directorios de logs"
+mkdir -p /var/log/qmail/smtpd
+chown qmaill /var/log/qmail /var/log/qmail/smtpd
+
+echo "Establecer número máximo de conexiones SMTP simultaneas"
+echo 20 > /var/qmail/control/concurrencyincoming
+chmod 644 /var/qmail/control/concurrencyincoming
+
+
+echo "Deshabilitar otros MTAs"
+qmailctl stop
+# Comprobar que no hay otros procesos escuchando en el puerto SMTP (25)
+service sendmail stop
+service exim4 stop
+
+echo "Suplantar sendmail"
+mv /usr/lib/sendmail /usr/lib/sendmail.old # ignore errors
+mv /usr/sbin/sendmail /usr/sbin/sendmail.old # ignore errors
+chmod 0 /usr/lib/sendmail.old /usr/sbin/sendmail.old # ignore errors
+ln -s /var/qmail/bin/sendmail /usr/lib
+ln -s /var/qmail/bin/sendmail /usr/sbin
+# ----------------------------------------------------- PASO 9
+echo "Crear alias para los usuarios administradores"
+echo root > /var/qmail/alias/.qmail-root
+ln -s /var/qmail/alias/.qmail-root /var/qmail/alias/.qmail-postmaster
+ln -s /var/qmail/alias/.qmail-root /var/qmail/alias/.qmail-mailer-daemon
+ln -s /var/qmail/alias/.qmail-root /var/qmail/alias/.qmail-abuse
+chmod 644 /var/qmail/alias/.qmail-root /var/qmail/alias/.qmail-postmaster
+
+echo "Reenvio selectivo: Cambiar rcpthosts y locals"
+echo $subdominio > /var/qmail/control/rcpthosts
+echo $subdominio > /var/qmail/control/locals
+
+echo "Crear el fichero tcp.smtp"
+echo '127.:allow,RELAYCLIENT=""' >> /etc/tcp.smtp
+echo '155.54.:allow,RELAYCLIENT=""' >> /etc/tcp.smtp
+echo '192.168.:allow,RELAYCLIENT=""' >> /etc/tcp.smtp
+
+echo "Comprobamos que el servicio funciona correctamente"
+killall svscanboot
+svscanboot &
+qmailctl cdb
+qmailctl stat
+
+echo "Añadir cuentas de usuario usuario1 y usuario2"
+adduser	--home /home/usuario1 usuario1
+adduser	--home /home/usuario2 usuario2
+echo . >> /home/usuario1/.qmail-usuario1
+echo . >> /home/usuario2/.qmail-usuario2
+chown usuario1 /home/usuario1/.qmail-usuario1
+chown usuario2 /home/usuario2/.qmail-usuario2
+chgrp usuario1 /home/usuario1/.qmail-usuario1
+chgrp usuario2 /home/usuario2/.qmail-usuario2
+chmod 777 /home/usuario1/.qmail-usuario1
+chmod 777 /home/usuario2/.qmail-usuario2
+maildirmake /home/usuario1/Maildir
+maildirmake /home/usuario2/Maildir
+chown -R usuario1 /home/usuario1/Maildir
+chgrp -R usuario2 /home/usuario2/Maildir
+chmod -R 777 /home/usuario1/Maildir
+chown -R usuario2 /home/usuario2/Maildir
+chgrp -R usuario1 /home/usuario1/Maildir
+chmod -R 777 /home/usuario2/Maildir
+
+
+
+

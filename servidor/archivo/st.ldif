@@ -1,0 +1,25 @@
+#Crea entrada en el sufijo
+dn: o=um,c=es
+changetype:add
+objectclass: organization
+
+#Primer nivel de la jerarquia, asignatura ST
+dn: ou=st,o=um,c=es
+changetype:add
+objectclass: organizationalunit
+description: Servicios Telematicos
+
+#Segundo nivel de la jerarquia, alumnos
+dn: cn=usuario1,ou=st,o=um,c=es
+changetype: add
+objectclass: stPerson
+sn: usuario1
+correo: usuario1@st.um
+mobile: 600100100
+
+dn: cn=usuario2,ou=st,o=um,c=es
+changetype: add
+objectclass: stPerson
+sn: usuario2
+correo: usuario2@st.um
+mobile: 600200200

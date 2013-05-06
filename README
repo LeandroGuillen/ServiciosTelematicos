@@ -1,0 +1,23 @@
+PROTOCOLO de ACTUACION
+----------------------
+1-Ejecutar como root en el host1/servidor el script 'servidor'.
+	1a-Comprueba el fichero /etc/resolv.conf: debe tener la ip del servidor DNS en el cliente (nameserver 192.168.6.2).
+2-Ejecutar como root en el host2/cliente el script 'cliente'.
+	2a-Si no funciona el DNS, en el cliente hay que reiniciar bind (/etc/init.d/bind9 restart).
+	2b-Comprueba el fichero /etc/resolv.conf: debe tener el dominio st.um y nameserver la ip del servidor
+
+CORREO (evolution):
+Nombre completo: usuario1
+Direccion de correo-e: usuario1@st.um
+Tipo de servidor: POP
+Servidor: correo.st.um
+Usuario: usuario1
+Tipo de servidor: SMTP
+Servidor: correo.st.um
+
+SSL:
+Los archivos han sido generados y puestos en la carpeta srv/ca/. No hay necesidad de seguir los pasos, solo ejecutar ./ssl que simplemente copia los archivos en su sitio.
+	* NOTA: Hubo que editar el archivo /usr/lib/ssl/openssl.cnf
+
+Password para LDAP:
+123

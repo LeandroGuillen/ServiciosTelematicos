@@ -1,0 +1,59 @@
+#!/bin/bash
+echo "Instalando los paquetes necesarios..."
+
+# opcion -qq	: modo 'quiet' y asume YES
+
+# LIMPIEZA
+# apt-get purge -qq slapd ldap-utils apache2 php5 libapache2-mod-php5
+# rm -r /var/lib/ldap
+
+# INSTALACIONES
+apt-get update -qq &&\
+# apt-get install -qq wireshark dhcp3-server bind9 patch maildrop slapd ldap-utils apache2 php5 libapache2-mod-php5 openssh-server vsftpd telnetd
+
+apt-get install wireshark isc-dhcp-server openssh-server vim bind9
+
+# ~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v
+# ~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v	PARA STA
+#apt-get install libxml2 libxml2-dev openssl* libncurses* libnewt* libsqlite* build-essential libcrypt* libgcrypt11*
+
+# nuevos
+# apt-get install build-essential libxml2 libxml2-dev openssl libssl-dev libncurses-dev libnewt-dev libsqlite-dev libcrypto++-dev libgcrypt11* &&/
+
+#wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-11-current.tar.gz
+
+# tar -xzvf asterisk-1.8.5.0.tar.gz
+# cd asterisk-1.8.5.0/
+# 
+# ./configure
+# make menuselect
+# make
+# make install
+# make config
+# make samples
+# 
+# cd ..
+# 
+# cp extensions.conf /etc/asterisk/
+# cp sip.conf /etc/asterisk/
+# cp users.conf /etc/asterisk/
+# 
+# /etc/init.d/asterisk restart
+
+####### TLS ####
+# Recortar fichero pem con begin certificate y end certificate
+# Al configurar blink, 
+
+
+####### Softphone
+
+# Al configurar blink requiere un unico fichero que contenga el contenido con la clave (RSA private key ...)
+# se concatena el valor del certificado. Aquí no hace aflta que se corte el certificado
+
+##
+# [CLIENTE] cat certificado.pem >> key.pem
+# [CA] cortar BEGIN - END
+# [CENTRALITA ASTERISK] cortar BEGIN - END
+#
+# EN CASO DE FALLO RESET TCP OJO CON RUTAS DE CERTIFICADOS EN SIP.CONF 
+##

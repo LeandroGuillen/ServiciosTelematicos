@@ -1,0 +1,60 @@
+#!/bin/bash
+echo "Configurar servicio DNS:"
+
+# Ficheros importantes a modificar:
+#	/etc/bind/named.conf.options
+#	/etc/bind/named.conf.local
+#	/etc/bind/db.$zona.zone
+
+zona=$1		# st.um
+zonadelegada="dummy"	# st.um
+ipservidor=$2	# 10.0.0.1
+ipcliente=$3	# 10.0.0.2
+ipcliente2=$4	# 10.0.0.3
+
+serial=$(date +%s)
+
+echo -e "\t- Configurando fichero /etc/bind/named.conf.local"
+
+local_configfile=\
+"zone \"$zona\" {\n\ttype master;\n\tfile \"/etc/bind/db.$zona.zone\";\n};"
+# "\nzone \"$zonadelegada\" {\n\ttype slave;\n\tmasters { $ipcliente; };\n};"
+
+
+echo -e "\t- Configurando fichero de la zona "$zona" en /etc/bind/db.$zona.zone"
+
+db_name_zone__configfile="\$ORIGIN\t$zona.\n\$TTL\t604800\n@\tIN\tSOA\tns.$zona.\troot.ns.$zona. (\n\t\t\t\t\t$serial ;Serial\n\t\t\t\t\t604800 ;Refresh\n\t\t\t\t\t86400 ;Retry\n\t\t\t\t\t2419200 ;Expire\n\t\t\t\t\t604800) ;Negative Cache TTL\n;\n\
+@\tIN\tNS\tns.$zona.\n\
+ns\tIN\tA\t$ipservidor\n\n\
+$zonadelegada.\tIN\tNS\tns.$zonadelegada.\n\
+ns.$zonadelegada. IN\tA\t$ipcliente\n\
+\n; Nombres para servidor.st.um\n\
+servidor\tIN\tCNAME\tns\n\
+smtp\tIN\tCNAME\tns\n\
+pop\tIN\tCNAME\tns\n\
+imap\tIN\tCNAME\tns\n\
+www\tIN\tCNAME\tns\n\
+ldap\tIN\tCNAME\tns\n\
+ftp\tIN\tCNAME\tns\n\
+\n; Nombres para cliente.st.um\n\
+cliente\tIN\tA\t$ipcliente\n\
+\n; Nombres para cliente2.st.um\n\
+cliente2\tIN\tA\t$ipcliente2\n\
+";
+
+
+echo -e "\t- Configurando fichero /etc/resolv.conf"
+
+resolv_conf_configfile="domain $zona\nsearch $zona\nnameserver $ipservidor"
+
+# Ejecucion
+# /usr/sbin/named # ...alternativa
+killall -wq named
+/etc/init.d/bind9 start # {stop | restart | status}
+
+sleep 3
+
+# La opcion -e es para que imprima los \t y \n correctamente
+echo -e $local_configfile > /etc/bind/named.conf.local
+echo -e $db_name_zone__configfile > /etc/bind/db.$zona.zone
+echo -e $resolv_conf_configfile > /etc/resolv.conf

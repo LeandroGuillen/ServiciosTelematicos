@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "Configurar servicio HTTP:"
+
+# Copiamos el fichero del sitio www.st.um
+cp -r archivo/st.conf /etc/apache2/sites-available/st
+
+# Establecemos la pagina por defecto
+cp -r archivo/st /var/www
+chmod 777 /var/www/st
+chmod 777 /var/www/st/*
+
+# Activamos el sitio www.st.um
+a2ensite st
+
+# Reinicia servidor web
+/etc/init.d/apache2 restart

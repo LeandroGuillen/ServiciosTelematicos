@@ -47,14 +47,14 @@ echo -e "\t- Configurando fichero /etc/resolv.conf"
 
 resolv_conf_configfile="domain $zona\nsearch $zona\nnameserver $ipservidor"
 
-# Ejecucion
-# /usr/sbin/named # ...alternativa
-killall -wq named
-/etc/init.d/bind9 start # {stop | restart | status}
-
-sleep 3
-
 # La opcion -e es para que imprima los \t y \n correctamente
 echo -e $local_configfile > /etc/bind/named.conf.local
 echo -e $db_name_zone__configfile > /etc/bind/db.$zona.zone
 echo -e $resolv_conf_configfile > /etc/resolv.conf
+
+# Ejecucion
+# /usr/sbin/named # ...alternativa
+sleep 1
+killall -wq named
+/etc/init.d/bind9 start # {stop | restart | status}
+sleep 3

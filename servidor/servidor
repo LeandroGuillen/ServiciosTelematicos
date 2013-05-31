@@ -25,7 +25,7 @@ echo -e "$name" > /etc/hostname
 # Preparar parametros de red
 # Ejemplo de ejecucion:
 # 	./red eth1 192.168.6.1 255.255.255.0
-./red $interfaz $ipservidor $mascara &&\
+./red $interfaz $interfaz_exterior $ipservidor $mascara &&\
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Instala los paquetes necesarios en el sistema. Sin parametros.
@@ -44,8 +44,8 @@ echo -e "$name" > /etc/hostname
 ./dhcp $subred $mascara $dominio $ipservidor $interfaz $ipcliente $MACcliente $ipcliente2 $MACcliente2
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# Pausa necesaria
-read -p "Ejecute el script del cliente ahora. Pulse ENTER para continuar..."
+# Pausa [in]necesaria
+# read -p "Ejecute el script del cliente ahora. Pulse ENTER para continuar..."
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Prepara servidor DNS
@@ -59,17 +59,14 @@ read -p "Ejecute el script del cliente ahora. Pulse ENTER para continuar..."
 # ./smtp $subdominio &&\
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# Preparar servicio de correo (POP)
-# ./pop
-
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Preparar servidor LDAP
 ./ldap
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # Preparar servidor HTTP
-# ./http
+./http
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# Preparar SSL
-# ./ssl
+# Preparar servicio de correo (POP)
+./pop
+

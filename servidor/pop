@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Modificar archivos de configuracion pertinentes de Dovecot
-echo -e "disable_plaintext_auth=no\nauth_mechanisms=plain\n!includeauth-system.conf.ext" > /etc/dovecot/conf.d/10-auth.conf
+echo -e "disable_plaintext_auth=no\nauth_mechanisms=plain\n!include auth-system.conf.ext" > /etc/dovecot/conf.d/10-auth.conf
 echo -e "mail_location=maildir:~/Maildir" > /etc/dovecot/conf.d/10-mail.conf
 
 # Crear cuentas en el SO

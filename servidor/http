@@ -1,13 +1,27 @@
 #!/bin/bash
-echo "Configurar servicio HTTP:"
+echo "Configurar servicio HTTP/HTTPS"
 
 # Copiamos el fichero del sitio www.st.um
-cp -r archivo/st.conf /etc/apache2/sites-available/st
+cp -r archivo/st-ssl.conf /etc/apache2/sites-available/st
 
-# Establecemos la pagina por defecto
-cp -r archivo/st /var/www
-chmod 777 /var/www/st
-chmod 777 /var/www/st/*
+# Pone la web en su sitio
+mkdir -p /home/alumno/www
+cp -r archivo/st /home/alumno/www
+
+# Establece permisos muy flojos
+chgrp alumno -R /home/alumno/www
+chown alumno -R /home/alumno/www
+chmod 755 /home/alumno/www/st
+chmod 755 /home/alumno/www/st/*
+
+# Coloca las credenciales para SSL
+mkdir /etc/apache2/stCA
+cp ca/servercert.pem /etc/apache2/stCA
+cp ca/serverkey.pem /etc/apache2/stCA
+cp ca/cacert.pem /etc/apache2/stCA
+
+# Activa el modulo ssl
+a2enmod ssl
 
 # Activamos el sitio www.st.um
 a2ensite st

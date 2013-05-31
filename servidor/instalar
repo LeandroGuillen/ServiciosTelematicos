@@ -1,7 +1,5 @@
 #!/bin/bash
-echo "Instalando los paquetes necesarios..."
 
-# opcion -qq	: modo 'quiet' y asume YES
 
 # LIMPIEZA
 # apt-get purge -qq slapd ldap-utils apache2 php5 libapache2-mod-php5
@@ -10,14 +8,17 @@ echo "Instalando los paquetes necesarios..."
 # INSTALACIONES
 
 # Limpiar LDAP
-apt-get purge slapd ldap-utils
+apt-get -qq purge slapd ldap-utils
 rm -r /var/lib/ldap
 
 # Actualizar...
+echo "Instalando paquetes..."
+
+# opcion -qq	: modo 'quiet' y asume YES
 apt-get update -qq &&\
 # apt-get install -qq  patch maildrop apache2 php5 libapache2-mod-php5 openssh-server vsftpd telnetd
 # ... e instalar
-apt-get install wireshark isc-dhcp-server openssh-server vim bind9 slapd ldap-utils exim4 dovecot-pop3d
+apt-get -qq install wireshark isc-dhcp-server openssh-server vim bind9 slapd ldap-utils exim4 dovecot-pop3d apache2 php5 libapache2-mod-php5
 
 # ~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v
 # ~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v~~~~~~~~~~v	PARA STA

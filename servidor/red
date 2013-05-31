@@ -1,17 +1,22 @@
 #!/bin/bash
 
 interfaz=$1
-ip=$2
-mascara=$3
+interfaz_exterior=$2
+ip=$3
+mascara=$4
 
-echo "Configuración general de red:"
+echo "Configuración general de red"
 
 # Preparar interfaz con ip fija para el servidor
-echo -e "\t- Desactivar la interfaz $interfaz"
+# echo -e "\t- Desactivar la interfaz $interfaz"
 ifconfig $interfaz down
-
-echo -e "\t- Estableciendo ip fija (${ip}) para el servidor, con mascara $mascara (${interfaz})"
+# echo -e "\t- Estableciendo ip fija (${ip}) para el servidor, con mascara $mascara (${interfaz})"
 ifconfig $interfaz $ip netmask $mascara
+
+ifconfig $interfaz_exterior down
+dhclient -r
+sleep 1
+dhclient $interfaz_exterior
 
 # Para IPv6:
 # ifconfig $interfaz inet6 add $ip6/64

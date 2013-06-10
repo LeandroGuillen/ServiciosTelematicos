@@ -5,12 +5,12 @@ subred="10.0.0"
 mascara="255.255.255.0"
 
 ipservidor="$subred.1"
-interfaz="eth2"
-interfaz_exterior="eth1"
+interfaz="eth1"
+interfaz_exterior="eth0"
 name="servidor"
 
 ipcliente="$subred.2"
-MACcliente="08:11:11:11:11:11"
+MACcliente="00:24:8c:d4:a4:18"
 ipcliente2="$subred.7"
 MACcliente2="08:22:22:22:22:22"
 

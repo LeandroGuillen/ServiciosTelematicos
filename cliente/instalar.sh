@@ -1,11 +1,9 @@
 #!/bin/bash
 
-echo "Instalando los paquetes necesarios..."
-
 # Instalar Blink (VoIP)
-wget http://download.ag-projects.com/agp-debian-gpg.key
+#wget http://download.ag-projects.com/agp-debian-gpg.key
 # Si hay error hay que mirar el archivo agp y comprobar que está funcionando el add
-apt-key add agp-debian-gpg.key
+#apt-key add agp-debian-gpg.key
 # cp sources.list /etc/apt/sources.list
 # echo "deb    http://ag-projects.com/ubuntu precise main\
 # \ndeb-src http://ag-projects.com/ubuntu precise main" >> /etc/apt/sources.list
@@ -17,4 +15,6 @@ apt-key add agp-debian-gpg.key
 echo "Ejecutando apt-get update..."
 apt-get update -qq &&\
 echo "Instalando paquetes..." &&\
-apt-get install libcrypt* libgcrypt11* blink bind9 wireshark ldap-utils
+# bind9? por ahora no hace falta
+apt-get install wireshark ldap-utils
+#apt-get install libcrypt* libgcrypt11* blink

@@ -15,3 +15,17 @@ passwd usuario2
 
 # Reiniciar el servicio
 service dovecot restart
+
+
+# dpkg-reconfigure exim4-config
+# *****************************
+# tipo de servidor: "internet site"
+# Nombre de dominio FQDM: "st.um"
+# en blanco -> desde cualquier IP
+# Dominios de destino final: "st.um"
+# Dominios para reenviar: "st.um; um.es"
+# Lista IPs para reenvio incondicional: 10.0.0.0/24
+# Limitar consultas DNS: NO
+# Formato del buzon: Maildir
+# Dividir ficheros de configuracion: NO
+# Direcciones para root y admins: "root webmaster@st.um"
